@@ -1,8 +1,9 @@
 <?php
 
-namespace Fico7489\Laravel\Pivot\Tests\Models;
+namespace GeneaLabs\LaravelPivotEvents\Tests\Models;
 
-use Fico7489\Laravel\Pivot\Traits\PivotEventTrait;
+use GeneaLabs\LaravelPivotEvents\Traits\PivotEventTrait;
+use Illuminate\Support\Str;
 
 class Seller extends BaseModel
 {
@@ -22,7 +23,7 @@ class Seller extends BaseModel
         parent::boot();
 
         static::creating(function ($model) {
-            $model->{$model->getKeyName()} = \Str::random(16);
+            $model->{$model->getKeyName()} = Str::random(16);
         });
     }
 

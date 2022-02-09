@@ -1,13 +1,11 @@
-<?php
+<?php namespace GeneaLabs\LaravelPivotEvents\Tests;
 
-namespace Fico7489\Laravel\Pivot\Tests;
-
-use Fico7489\Laravel\Pivot\Tests\Models\Post;
-use Fico7489\Laravel\Pivot\Tests\Models\Role;
-use Fico7489\Laravel\Pivot\Tests\Models\Seller;
-use Fico7489\Laravel\Pivot\Tests\Models\Tag;
-use Fico7489\Laravel\Pivot\Tests\Models\User;
-use Fico7489\Laravel\Pivot\Tests\Models\Video;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Tag;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Post;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Role;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\User;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Video;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Seller;
 
 class PivotEventTraitTest extends TestCase
 {
@@ -344,6 +342,7 @@ class PivotEventTraitTest extends TestCase
         ]);
     }
 
+    /** @group test */
     public function test_polymorphic_sync_int()
     {
         $this->startListening();
@@ -355,6 +354,7 @@ class PivotEventTraitTest extends TestCase
         $post->tags()->sync(1);
 
         $this->assertEquals(1, \DB::table('taggables')->count());
+
         $this->check_events([
             'eloquent.pivotDetaching: '.Post::class,
             'eloquent.pivotDetached: '.Post::class,
@@ -519,7 +519,7 @@ class PivotEventTraitTest extends TestCase
     {
         $i = 0;
         foreach ($events as $event) {
-            $this->assertEquals(self::$events[$i][0], $event);
+            $this->assertEquals(self::$events[$i]['name'], $event);
             ++$i;
         }
         $this->assertEquals(count($events), count(self::$events));
@@ -527,9 +527,9 @@ class PivotEventTraitTest extends TestCase
 
     private function check_variables($number, $ids, $idsAttributes = [], $relation = 'roles')
     {
-        $this->assertEquals(self::$events[$number][2], $relation);
-        $this->assertEquals(self::$events[$number][3], $ids);
-        $this->assertEquals(self::$events[$number][4], $idsAttributes);
+        $this->assertEquals(self::$events[$number]['pivotIds'], $ids);
+        $this->assertEquals(self::$events[$number]['pivotIdsAttributes'], $idsAttributes);
+        $this->assertEquals(self::$events[$number]['relation'], $relation);
     }
 
     private function check_database($count, $value, $number = 0, $attribute = 'value', $table = 'role_user')

@@ -1,13 +1,11 @@
-<?php
+<?php namespace GeneaLabs\LaravelPivotEvents\Tests;
 
-namespace Fico7489\Laravel\Pivot\Tests;
-
-use Fico7489\Laravel\Pivot\Tests\Models\Post;
-use Fico7489\Laravel\Pivot\Tests\Models\Role;
-use Fico7489\Laravel\Pivot\Tests\Models\Seller;
-use Fico7489\Laravel\Pivot\Tests\Models\Tag;
-use Fico7489\Laravel\Pivot\Tests\Models\User;
-use Fico7489\Laravel\Pivot\Tests\Models\Video;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Tag;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Post;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Role;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\User;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Video;
+use GeneaLabs\LaravelPivotEvents\Tests\Models\Seller;
 
 abstract class TestCase extends \Orchestra\Testbench\TestCase
 {
@@ -42,8 +40,10 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         $this->assertEquals(0, \DB::table('taggables')->count());
 
         \Event::listen('eloquent.*', function ($eventName, array $data) {
-            if (0 !== strpos($eventName, 'eloquent.retrieved') && 0 !== strpos($eventName, 'eloquent.booting') && 0 !== strpos($eventName, 'eloquent.booted')) {
-                self::$events[] = array_merge([$eventName], $data);
+            if (0 !== strpos($eventName, 'eloquent.retrieved')
+                && array_key_exists("model", $data)
+            ) {
+                self::$events[] = [0 => $data['model'], 'name' => $eventName, 'model' => $data['model'], 'relation' => $data['relation'], 'pivotIds' => $data['pivotIds'], 'pivotIdsAttributes' => $data['pivotIdsAttributes']];
             }
         });
     }
@@ -53,9 +53,9 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testbench');
         $app['config']->set('database.connections.testbench', [
-            'driver' => 'sqlite',
+            'driver'   => 'sqlite',
             'database' => ':memory:',
-            'prefix' => '',
+            'prefix'   => '',
         ]);
     }
 
