@@ -1,9 +1,7 @@
-<?php
+<?php namespace GeneaLabs\LaravelPivotEvents\Traits;
 
-namespace Fico7489\Laravel\Pivot\Traits;
-
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Collection;
 
 trait FiresPivotEventsTrait
 {
@@ -11,16 +9,14 @@ trait FiresPivotEventsTrait
      * Attach a model to the parent.
      *
      * @param mixed $id
+     * @param array $attributes
      * @param bool  $touch
      */
     public function attach($ids, array $attributes = [], $touch = true)
     {
         list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($ids, $attributes);
 
-        if (false === $this->parent->fireModelEvent('pivotAttaching', true, $this->getRelationName(), $idsOnly, $idsAttributes)) {
-            return false;
-        }
-
+        $this->parent->fireModelEvent('pivotAttaching', true, $this->getRelationName(), $idsOnly, $idsAttributes);
         $parentResult = parent::attach($ids, $attributes, $touch);
         $this->parent->fireModelEvent('pivotAttached', false, $this->getRelationName(), $idsOnly, $idsAttributes);
 
@@ -43,10 +39,7 @@ trait FiresPivotEventsTrait
 
         list($idsOnly) = $this->getIdsWithAttributes($ids);
 
-        if (false === $this->parent->fireModelEvent('pivotDetaching', true, $this->getRelationName(), $idsOnly)) {
-            return false;
-        }
-
+        $this->parent->fireModelEvent('pivotDetaching', true, $this->getRelationName(), $idsOnly);
         $parentResult = parent::detach($ids, $touch);
         $this->parent->fireModelEvent('pivotDetached', false, $this->getRelationName(), $idsOnly);
 
@@ -57,6 +50,7 @@ trait FiresPivotEventsTrait
      * Update an existing pivot record on the table.
      *
      * @param mixed $id
+     * @param array $attributes
      * @param bool  $touch
      *
      * @return int
@@ -65,10 +59,7 @@ trait FiresPivotEventsTrait
     {
         list($idsOnly, $idsAttributes) = $this->getIdsWithAttributes($id, $attributes);
 
-        if (false === $this->parent->fireModelEvent('pivotUpdating', true, $this->getRelationName(), $idsOnly, $idsAttributes)) {
-            return false;
-        }
-
+        $this->parent->fireModelEvent('pivotUpdating', true, $this->getRelationName(), $idsOnly, $idsAttributes);
         $parentResult = parent::updateExistingPivot($id, $attributes, $touch);
         $this->parent->fireModelEvent('pivotUpdated', false, $this->getRelationName(), $idsOnly, $idsAttributes);
 
